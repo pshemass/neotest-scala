@@ -62,7 +62,7 @@ function ScalaNeotestAdapter.discover_positions(path)
 	  (object_definition
 	   name: (identifier) @namespace.name)
 	   @namespace.definition
-	  
+	
       (class_definition
       name: (identifier) @namespace.name)
       @namespace.definition
@@ -102,14 +102,18 @@ end
 
 ---Get first project name from bloop projects.
 ---@return string|nil
-local function get_bloop_project_name()
-    local command = "bloop projects"
-    local handle = assert(io.popen(command), string.format("unable to execute: [%s]", command))
-    local result = handle:read("*l")
-    handle:close()
-    return result
+local function get_bloop_project_name(root_dir, file_path)
+    local bloop_dir = root_dir .. "/.bloop"
+    for project_json in vim.fn.glob(bloop_dir .. "/*.json", true, true) do
+        local data = lib.files.read(project_json)
+        local project_dir = data:match('"directory":%s*"([^"]+)"')
+        if project_dir and file_path:find(vim.pesc(project_dir), 1, true) == 1 then
+            -- This file's path starts with the project directory
+            return vim.fn.fnamemodify(project_json, ":t:r") -- return the project name (file name without .json)
+        end
+    end
+    return nil
 end
-
 ---Get project name from build file.
 ---@return string|nil
 local function get_project_name(path, runner)
@@ -126,7 +130,7 @@ local function get_project_name(path, runner)
         end
     end
     if runner == "bloop" then
-        local bloop_project = get_bloop_project_name()
+        local bloop_project = get_bloop_project_name(root, path)
         if bloop_project then
             return bloop_project
         end
