@@ -234,7 +234,7 @@ function ScalaNeotestAdapter.build_spec(args)
         }
     end
     if node.type == "test" then
-        local className = utils.get_position_name(node:parent():data())
+        local className = utils.get_position_name(tree:parent():data())
 
         local testLabel = node.name -- the label of the individual test
         return {
