@@ -213,6 +213,39 @@ end
 ---@param args neotest.RunArgs
 ---@return neotest.RunSpec
 function ScalaNeotestAdapter.build_spec(args)
+    local node = args.tree()
+    if node.type == "file" or node.type == "namespace" then
+        -- Run the whole spec (test suite class)
+        local className = utils.get_position_name(node.parent():data())
+        -- determine FQN from package/object name
+        return {
+            command = nil, -- we'll use a custom strategy instead of a direct shell command
+            context = { class = className },
+            strategy = function(spec)
+                vim.lsp.buf.execute_command({
+                    command = "metals.run-test",
+                    arguments = { className },
+                })
+                -- We rely on Metals to handle output; could add callbacks to capture results
+                return true -- indicate the command was executed
+            end,
+        }
+    end
+    if node.type == "test" then
+        local className = utils.get_position_name(node.parent():data())
+
+        local testLabel = node.name -- the label of the individual test
+        return {
+            strategy = function()
+                vim.lsp.buf.execute_command({
+                    command = "metals.run-test",
+                    arguments = { className, { args = { "-t", testLabel } } },
+                })
+                return true
+            end,
+            context = { class = className, test = testLabel },
+        }
+    end
     local position = args.tree:data()
     local runner = get_runner()
     assert(lib.func_util.index({ "bloop", "sbt" }, runner), "set sbt or bloop runner")
