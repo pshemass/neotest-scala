@@ -104,12 +104,22 @@ end
 ---@return string|nil
 local function get_bloop_project_name(root_dir, file_path)
     local bloop_dir = root_dir .. "/.bloop"
-    for project_json in vim.fn.glob(bloop_dir .. "/*.json", true, true) do
-        local data = lib.files.read(project_json)
+    local success, files = pcall(vim.fn.glob, bloop_dir .. "/*.json", true, true)
+    if not success then
+        return nil
+    end
+    for project_json in files do
+        local sucess, data = pcall(lib.files.read, project_json)
+        if not sucess then
+            return nil
+        end
         local project_dir = data:match('"directory":%s*"([^"]+)"')
         if project_dir and file_path:find(vim.pesc(project_dir), 1, true) == 1 then
             -- This file's path starts with the project directory
-            return vim.fn.fnamemodify(project_json, ":t:r") -- return the project name (file name without .json)
+            local success, result = pcall(vim.fn.fnamemodify, project_json, ":t:r") -- return the project name (file name without .json)
+            if success then
+                return result
+            end
         end
     end
     return nil
