@@ -104,6 +104,7 @@ end
 ---@return string|nil
 local function get_bloop_project_name(root_dir, file_path)
     local bloop_dir = root_dir .. "/.bloop"
+    lib.notify("bloop_dir: " .. bloop_dir)
     local success, files = pcall(vim.fn.glob, bloop_dir .. "/*.json", true, true)
     if not success then
         return nil
