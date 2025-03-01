@@ -218,7 +218,7 @@ function ScalaNeotestAdapter.build_spec(args)
     local node = tree:data()
     if node.type == "file" or node.type == "namespace" then
         -- Run the whole spec (test suite class)
-        local className = utils.get_position_name(node.parent():data())
+        local className = utils.get_position_name(tree.parent():data())
         -- determine FQN from package/object name
         return {
             command = nil, -- we'll use a custom strategy instead of a direct shell command
