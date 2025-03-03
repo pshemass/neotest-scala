@@ -108,7 +108,7 @@ end
 ---@return string|nil
 local function get_bloop_project_name(root_dir, file_path)
     local bloop_dir = root_dir .. "/.bloop"
-    local files = lib.files.find(bloop_dir, filter_dir_not)
+    local files = lib.files.find(bloop_dir, { filter_dir = filter_dir_not })
     for k, v in pairs(files) do
         lib.notify("files " .. k .. " " .. v)
     end
