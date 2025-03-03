@@ -30,7 +30,7 @@ function ScalaNeotestAdapter.filter_dir(_, _, _)
     return true
 end
 
-local function filter_dir_not(_, _, _)
+function filter_dir_not(_, _, _)
     return false
 end
 
