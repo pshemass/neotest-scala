@@ -104,10 +104,13 @@ end
 ---@return string|nil
 local function get_bloop_project_name(root_dir, file_path)
     local bloop_dir = root_dir .. "/.bloop"
-    local files = lib.files.match_root_pattern("*.json")(bloop_dir)
+    local files = lib.files.find(bloop_dir, nil)
 
     lib.notify("bloop_dir: " .. bloop_dir .. " path: " .. file_path .. " files: " .. files)
     for project_json in files do
+        if not project_json:find("json$") then
+            goto continue
+        end
         local sucess, data = pcall(lib.files.read, project_json)
         if not sucess then
             return nil
