@@ -104,7 +104,7 @@ end
 ---@return string|nil
 local function get_bloop_project_name(root_dir, file_path)
     local bloop_dir = root_dir .. "/.bloop"
-    local files = lib.files.find(bloop_dir, nil)
+    local files = lib.files.find(bloop_dir, { filter_dir = ScalaNeotestAdapter.filter_dir })
 
     for project_json in files do
         if project_json:find("json$") then
