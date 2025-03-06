@@ -108,13 +108,10 @@ end
 ---@return string|nil
 local function get_bloop_project_name(root_dir, file_path)
     local bloop_dir = root_dir .. "/.bloop"
-    local files = lib.files.find(bloop_dir, filter_dir_not)
-    for k, v in pairs(files) do
-        lib.notify("files " .. k .. " " .. v)
-    end
+    local files = lib.files.find(bloop_dir, { filter_dir = filter_dir_not })
 
     for i, project_json in pairs(files) do
-        if project_json:find("json$") then
+        if project_json:find("json$") and not project_json:find("root") then
             local sucess, data = pcall(lib.files.read, project_json)
             if not sucess then
                 return nil
@@ -129,7 +126,7 @@ local function get_bloop_project_name(root_dir, file_path)
             end
         end
     end
-    return nil
+    return "root"
 end
 ---Get project name from build file.
 ---@return string|nil
