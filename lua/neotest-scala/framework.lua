@@ -46,7 +46,7 @@ local function build_command_with_test_path(project, runner, test_path, extra_ar
             full_test_path = { "-o", namespace }
         end
         local cmd = vim.tbl_flatten({ "bloop", "test", extra_args, project, full_test_path })
-        lib.notify("Bloop command: " .. cmd)
+        lib.notify("Bloop command: " .. table.concat(cmd, " "))
         return cmd
     end
     if not test_path then
