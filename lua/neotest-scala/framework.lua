@@ -1,4 +1,5 @@
 local utils = require("neotest-scala.utils")
+local lib = require("neotest.lib")
 
 local M = {}
 
@@ -35,7 +36,6 @@ end
 ---@param test_path string|nil
 ---@param extra_args table|string
 ---@return string[]
-
 local function build_command_with_test_path(project, runner, test_path, extra_args)
     if runner == "bloop" then
         local full_test_path
@@ -43,9 +43,11 @@ local function build_command_with_test_path(project, runner, test_path, extra_ar
             full_test_path = {}
         else
             local namespace = test_path:match("^(.*)%.%w+$")
-            full_test_path = { "-o", namespace, "--", test_path }
+            full_test_path = { "-o", namespace }
         end
-        return vim.tbl_flatten({ "bloop", "test", extra_args, project, full_test_path })
+        local cmd = vim.tbl_flatten({ "bloop", "test", extra_args, project, full_test_path })
+        lib.notify("Bloop command: " .. cmd)
+        return cmd
     end
     if not test_path then
         return vim.tbl_flatten({ "sbt", extra_args, project .. "/test" })
