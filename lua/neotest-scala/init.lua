@@ -30,7 +30,7 @@ function ScalaNeotestAdapter.filter_dir(_, _, _)
     return true
 end
 
-function filter_dir_not(_, _, _)
+local function filter_dir_not(_, _, _)
     return false
 end
 
@@ -109,7 +109,6 @@ end
 local function get_bloop_project_name(root_dir, file_path)
     local bloop_dir = root_dir .. "/.bloop"
     local files = lib.files.find(bloop_dir, { filter_dir = filter_dir_not })
-
     for i, project_json in pairs(files) do
         if project_json:find("json$") and not project_json:find("root") then
             local sucess, data = pcall(lib.files.read, project_json)
