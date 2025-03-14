@@ -33,23 +33,25 @@ end
 
 ---@param project string
 ---@param runner string
----@param test_path string|nil
+---@param test_class string|nil
+---@param test_name string|nil
 ---@param extra_args table|string
 ---@return string[]
-local function build_command_with_test_path(project, runner, test_path, extra_args)
+local function build_command_with_test_path(project, runner, test_class, test_name, extra_args)
     if runner == "bloop" then
         local full_test_path
-        if not test_path then
+        if not test_class then
             full_test_path = {}
+        elseif not test_name then -- Run all tests in the test class.
+            full_test_path = { "-o", test_class }
         else
-            local namespace = test_path:match("^(.*)%.%w+$")
-            full_test_path = { "-o", namespace }
+            full_test_path = { "-o", test_class, "--", test_class .. "." .. test_name }
         end
         local cmd = vim.tbl_flatten({ "bloop", "test", extra_args, project, full_test_path })
         lib.notify("Bloop command: " .. table.concat(cmd, " "))
         return cmd
     end
-    if not test_path then
+    if not test_class then
         return vim.tbl_flatten({ "sbt", extra_args, project .. "/test" })
     end
     -- TODO: Run sbt with colors, but figuoure wich ainsi sequence need to be matched.
@@ -57,7 +59,7 @@ local function build_command_with_test_path(project, runner, test_path, extra_ar
         "sbt",
         "--no-colors",
         extra_args,
-        project .. "/testOnly -- " .. '"' .. test_path .. '"',
+        project .. "/testOnly -- " .. '"' .. test_class .. '"',
     })
 end
 
