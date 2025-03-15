@@ -503,6 +503,7 @@ local function zio_framework()
             end
         end
         lib.notify("Test results: " .. table.concat(test_results, " "))
+        lib.notify("Test output Lines: " .. table.concat(output_lines, " "))
         return test_results
     end
 
