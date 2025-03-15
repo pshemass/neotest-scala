@@ -244,6 +244,7 @@ local function get_results(tree, test_results, match_func)
             results[position.id] = { status = TEST_FAILED }
         else
             local test_result
+            lib.notify("position.id: " .. position.id)
             if match_func then
                 test_result = match_func(test_results, position.id)
             else

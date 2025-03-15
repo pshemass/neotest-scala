@@ -497,10 +497,10 @@ local function zio_framework()
             lib.notify("Test line: " .. line)
             if vim.startswith(line, "+") then
                 lib.notify("success line: " .. line)
-                local test_id = line
+                local test_id = line:sub(3)
                 test_results[test_id] = TEST_PASSED
             elseif vim.startswith(line, "-") then
-                local test_id = line
+                local test_id = line:sub(3)
                 test_results[test_id] = TEST_FAILED
             end
         end
