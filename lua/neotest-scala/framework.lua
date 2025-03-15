@@ -510,7 +510,7 @@ local function zio_framework()
                 test_results[test_id] = TEST_FAILED
             end
         end
-        lib.notify("ZIO test results: " .. table.concat(table_result, " "))
+        lib.notify("ZIO test results: " .. table.concat(test_results, " "))
         return test_results
     end
 
