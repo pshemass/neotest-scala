@@ -494,6 +494,7 @@ local function zio_framework()
         local test_results = {}
         for _, line in ipairs(output_lines) do
             line = strip_ainsi_chars(line)
+            lib.notify("Test line: " .. line)
             if vim.startswith(line, "+") then
                 local test_id = get_test_id(line)
                 test_results[test_id] = TEST_PASSED
@@ -503,7 +504,6 @@ local function zio_framework()
             end
         end
         lib.notify("Test results: " .. table.concat(test_results, " "))
-        lib.notify("Test output Lines: " .. table.concat(output_lines, " "))
         return test_results
     end
 
