@@ -493,13 +493,13 @@ local function zio_framework()
     local function get_test_results(output_lines)
         local test_results = {}
         for _, line in ipairs(output_lines) do
-            line = strip_ainsi_chars(line)
+            line = vim.trim(strip_ainsi_chars(line))
             lib.notify("Test line: " .. line)
             if vim.startswith(line, "+") then
-                local test_id = get_test_id(line)
+                local test_id = line
                 test_results[test_id] = TEST_PASSED
-            elseif vim.startswith(line, "X") then
-                local test_id = get_test_id(line)
+            elseif vim.startswith(line, "-") then
+                local test_id = line
                 test_results[test_id] = TEST_FAILED
             end
         end
