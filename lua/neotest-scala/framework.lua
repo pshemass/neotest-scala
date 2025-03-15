@@ -496,6 +496,7 @@ local function zio_framework()
             line = vim.trim(strip_ainsi_chars(line))
             lib.notify("Test line: " .. line)
             if vim.startswith(line, "+") then
+                lib.notify("success line: " .. line)
                 local test_id = line
                 test_results[test_id] = TEST_PASSED
             elseif vim.startswith(line, "-") then
