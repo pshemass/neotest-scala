@@ -407,8 +407,9 @@ local function scalatest_framework()
         match_func = match_func,
     }
 end
+
 ---@return neotest-scala.Framework
-local function utest_framework()
+local function zio_framework()
     -- Builds a test path from the current position in the tree.
     ---@param tree neotest.Tree
     ---@param name string
