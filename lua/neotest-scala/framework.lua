@@ -408,29 +408,30 @@ local function scalatest_framework()
     }
 end
 ---@return neotest-scala.Framework
-local function zio_framework()
+local function utest_framework()
     -- Builds a test path from the current position in the tree.
     ---@param tree neotest.Tree
     ---@param name string
-    ---@return string|nil
+    ---@return string|nil, string|nil
     local function build_test_path(tree, name)
         local parent_tree = tree:parent()
         local type = tree:data().type
         if parent_tree and parent_tree:data().type == "namespace" then
             local package = utils.get_package_name(parent_tree:data().path)
             local parent_name = parent_tree:data().name
-            return package .. parent_name .. "." .. name
+            return package .. parent_name, name
         end
         if parent_tree and parent_tree:data().type == "test" then
             local parent_pos = parent_tree:data()
-            return build_test_path(parent_tree, utils.get_position_name(parent_pos)) .. "." .. name
+            local parent_class, parent_name = build_test_path(parent_tree, utils.get_position_name(parent_pos))
+            return parent_class, parent_name .. "." .. name
         end
         if type == "namespace" then
             local package = utils.get_package_name(tree:data().path)
             if not package then
-                return nil
+                return nil, nil
             end
-            return package .. name
+            return package .. name, nil
         end
         if type == "file" then
             local test_suites = {}
@@ -441,7 +442,7 @@ local function zio_framework()
             end
             if test_suites then
                 local package = utils.get_package_name(tree:data().path)
-                return package .. "{" .. table.concat(test_suites, ",") .. "}"
+                return package .. "{" .. table.concat(test_suites, ",") .. "}", nil
             end
         end
         if type == "dir" then
@@ -457,10 +458,10 @@ local function zio_framework()
                 end
             end
             if packages then
-                return "{" .. table.concat(packages, ",") .. "}"
+                return "{" .. table.concat(packages, ",") .. "}", nil
             end
         end
-        return nil
+        return nil, nil
     end
 
     --- Builds a command for running tests for the framework.
@@ -469,18 +470,8 @@ local function zio_framework()
     ---@param tree neotest.Tree
     ---@param name string
     ---@param extra_args table|string
-    ---@return string[]
     local function build_command(runner, project, tree, name, extra_args)
         local test_class, test_name = build_test_path(tree, name)
-        if runner == "bloop" then
-            local full_test_path
-            if not test_class then
-                full_test_path = {}
-            else
-                full_test_path = { "-o", test_class, "--", test_class .. "." .. test_name }
-            end
-            return vim.tbl_flatten({ "bloop", "test", extra_args, project, full_test_path })
-        end
         return build_command_with_test_path(project, runner, test_class, test_name, extra_args)
     end
 
@@ -510,7 +501,7 @@ local function zio_framework()
                 test_results[test_id] = TEST_FAILED
             end
         end
-        lib.notify("ZIO test results: " .. table.concat(test_results, " "))
+        lib.notify("Test results: " .. table.concat(test_results, " "))
         return test_results
     end
 
